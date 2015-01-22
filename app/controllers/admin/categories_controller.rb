@@ -6,8 +6,13 @@ class Admin::CategoriesController < Admin::BaseController
   end
 
   def edit
-    @action = 'edit'
-    edit_helper
+    if params[:id].nil?
+      new
+    elsif request.post?
+      update 
+    else
+      render_edit
+    end
   end
 
   def new
@@ -28,7 +33,6 @@ class Admin::CategoriesController < Admin::BaseController
   private
 
   def render_new
-    @action = 'new'
     @categories = Category.find(:all)
     @category = Category.new
     render 'new'
@@ -50,7 +54,6 @@ class Admin::CategoriesController < Admin::BaseController
   end
 
   def render_edit
-    @action = 'edit'
     @categories = Category.find(:all)
     @category = Category.find(params[:id])
     render 'new'
@@ -63,14 +66,6 @@ class Admin::CategoriesController < Admin::BaseController
     save 
     return
   end 
-
-  def edit_helper
-    if request.post?
-      update 
-    else
-      render_edit
-    end
-  end
 
   def save 
     respond_to do |format|
