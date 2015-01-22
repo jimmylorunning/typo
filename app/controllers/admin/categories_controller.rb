@@ -1,15 +1,19 @@
 class Admin::CategoriesController < Admin::BaseController
   cache_sweeper :blog_sweeper
 
-  def index; redirect_to :action => 'new' ; end
-  def edit; new_or_edit;  end
+  def index
+    redirect_to :action => 'new'
+  end
 
-  def new 
+  def edit
+    @action = 'edit'
+    edit_helper
+  end
+
+  def new
     respond_to do |format|
-      format.html { new_or_edit }
-      format.js { 
-        @category = Category.new
-      }
+      format.html { new_helper }
+      format.js { @category = Category.new }
     end
   end
 
@@ -23,23 +27,63 @@ class Admin::CategoriesController < Admin::BaseController
 
   private
 
-  def new_or_edit
+  def render_new
+    @action = 'new'
+    @categories = Category.find(:all)
+    @category = Category.new
+    render 'new'
+  end
+
+  def create 
+    @categories = Category.find(:all)
+    @category = Category.new(params[:category])
+    save 
+    return
+  end
+
+  def new_helper
+    if request.post?
+      create 
+    else
+      render_new
+    end
+  end
+
+  def render_edit
+    @action = 'edit'
+    @categories = Category.find(:all)
+    @category = Category.find(params[:id])
+    render 'new'
+  end
+  
+  def update
     @categories = Category.find(:all)
     @category = Category.find(params[:id])
     @category.attributes = params[:category]
+    save 
+    return
+  end 
+
+  def edit_helper
     if request.post?
-      respond_to do |format|
-        format.html { save_category }
-        format.js do 
-          @category.save
-          @article = Article.new
-          @article.categories << @category
-          return render(:partial => 'admin/content/categories')
-        end
-      end
-      return
+      update 
+    else
+      render_edit
     end
-    render 'new'
+  end
+
+  def save 
+    respond_to do |format|
+      format.html { save_category }
+      format.js { js_save_category } 
+    end
+  end
+
+  def js_save_category
+    @category.save
+    @article = Article.new
+    @article.categories << @category
+    return render(:partial => 'admin/content/categories')
   end
 
   def save_category
