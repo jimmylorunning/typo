@@ -72,7 +72,7 @@ class Article < Content
   end
 
   def merge!(other_id)
-    raise ArgumentError, 'Cannot merge article with itself' if other_id == self.id
+    raise ArgumentError, 'Cannot merge article with itself' if other_id.to_i == self.id
     other = Article.find(other_id)
     raise ArgumentError, 'Article not found for merge' if other.nil?
     self.body = self.body + ' ' + other.body
