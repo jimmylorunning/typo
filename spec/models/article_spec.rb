@@ -97,6 +97,39 @@ describe Article do
     assert_equal 1, b.categories.size
   end
 
+  describe "merge method" do
+    before do
+      a = Article.create! user_id: 1, body: "Foo", title: "Zzz"
+      b = Article.create! user_id: 2, body: "Bar", title: "Aaa"
+      c1a = Comment.create! author: 'Bob', article: a, body: 'yowzers'
+      c2a = Comment.create! author: 'Susan', article: a, body: 'love it'
+      c1b = Comment.create! author: 'Pat', article: b, body: 'i agree'
+      c2b = Comment.create! author: 'Jane', article: b, body: 'sweeeet'
+    end
+    
+    it "should make A's body be A + B" do
+    end
+
+    it "should remove B" do
+    end
+
+    it "should set author to A's author" do
+    end
+
+    it "should set title to A's title" do
+    end
+    
+    it "should import B's comments to A" do
+    end
+
+    it "should raise error if B does not exist" do
+    end
+
+    it "should raise error if B is A" do
+    end
+
+  end
+
   it "test_permalink_with_title" do
     article = Factory(:article, :permalink => 'article-3', :published_at => Time.utc(2004, 6, 1))
     assert_equal(article,
