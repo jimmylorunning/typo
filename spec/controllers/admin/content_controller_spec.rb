@@ -671,4 +671,50 @@ describe Admin::ContentController do
 
     end
   end
+
+# Jimmy's tests... if this were an actual pull request, I'd put them in the blocks above under 
+# describe user not admin and describe user is admin for DRY purposes (I'm repeating before blocks here)
+# but since this is just for the SaaS class, I prefer to have them all in one place down here for easy editing.
+  
+  describe "merge action" do    
+    context "when user is not administrator" do
+      before do
+        Factory(:blog)
+        @user = Factory(:user, :text_filter => Factory(:markdown), :profile => Factory(:profile_publisher))
+        @article = Factory(:article)
+        request.session = {:user => @user.id}
+      end
+
+      it "redirects to the new action" do
+        article_id = @article.id
+        post :merge, 'id' => article_id, 'merge'  => {:with => '3'} 
+        flash.should_not be_nil
+        response.should redirect_to(:action => 'new', :id =>  article_id)
+      end
+    end
+
+    context "when user is administrator" do
+      before do
+        Factory(:blog)
+        Profile.delete_all
+        @user = Factory(:user, :text_filter => Factory(:markdown), :profile => Factory(:profile_admin, :label => Profile::ADMIN))
+        @user_a = Factory(:user, :login => 'user_a')
+        @user_b = Factory(:user, :login => 'user_b')
+        @user.editor = 'simple'
+        @user.save
+        @article_a = Factory(:article, :title => 'title A', :body => 'content A', :user => @user_a)
+        @article_b = Factory(:article, :title => 'title B', :body => 'body B', :user => @user_b)
+        request.session = {:user => @user.id}
+      end
+
+      it "should raise error if article A does not exist" do
+      end
+
+      it "should ask article A to merge with other article B" do
+      end
+
+      it "should redirect to newly merged article" do
+      end
+    end
+  end
 end
