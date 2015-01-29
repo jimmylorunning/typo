@@ -8,12 +8,12 @@ Feature: Merge Articles
     And I am logged into the admin panel
     And the following articles exist:
       | id | title        | body              |
-      |  2 | Foobar       | Lorem Ipsum       |
-      |  3 | Barfoo       | Lambchop Bone     |
+      |  3 | Foobar       | Lorem Ipsum       |
+      |  4 | Barfoo       | Lambchop Bone     |
 
   Scenario: Successfully merge articles
     Given I am on the articles page for "Foobar"
-    And I fill in "merge_with" with "3"  
+    And I fill in "merge_with" with "4"  
     And I press "Merge"
     Then the article "Foobar" should have body "Lorem Ipsum Lambchop Bone"
     And show me the page
