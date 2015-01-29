@@ -43,6 +43,8 @@ class Admin::ContentController < Admin::BaseController
       redirect_to(:action => 'new', :id => params[:id]) and return
     end
     @article = Article.find(params[:id])
+    raise ArgumentError, 'Article id not found for merge' if @article.nil?
+    @article.merge!(params[:merge][:with])
     redirect_to :action => 'new', :id => params[:id]
   end
 
