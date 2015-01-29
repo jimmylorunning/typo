@@ -99,33 +99,55 @@ describe Article do
 
   describe "merge method" do
     before do
-      a = Article.create! user_id: 1, body: "Foo", title: "Zzz"
-      b = Article.create! user_id: 2, body: "Bar", title: "Aaa"
-      c1a = Comment.create! author: 'Bob', article: a, body: 'yowzers'
-      c2a = Comment.create! author: 'Susan', article: a, body: 'love it'
-      c1b = Comment.create! author: 'Pat', article: b, body: 'i agree'
-      c2b = Comment.create! author: 'Jane', article: b, body: 'sweeeet'
+      @a = Article.create! user_id: 1, body: "Foo", title: "Zzz", author: "Julie"
+      @b = Article.create! user_id: 2, body: "Bar", title: "Aaa", author: "Demetrius"
+      @c1a = Comment.create! author: 'Bob', article: @a, body: 'yowzers'
+      @c2a = Comment.create! author: 'Susan', article: @a, body: 'love it'
+      @c1b = Comment.create! author: 'Pat', article: @b, body: 'i agree'
+      @c2b = Comment.create! author: 'Jane', article: @b, body: 'sweeeet'
+      @a_id = @a.id
+      @b_id = @b.id
     end
     
     it "should make A's body be A + B" do
+      @a.merge!(@b_id)
+      assert_equal "Foo Bar", @a.body # question: should it add the space when concatenating bodies?
     end
 
     it "should remove B" do
+      @a.merge!(@b_id)
+      assert_nil Article.find_by_id(@b_id)
     end
 
     it "should set author to A's author" do
+      @a.merge!(@b_id)
+      assert_equal @a.author, "Julie"
+      assert_equal @a.user_id, 1
     end
 
     it "should set title to A's title" do
+      @a.merge!(@b_id)
+      assert_equal @a.title, "Zzz"
     end
     
     it "should import B's comments to A" do
+      @a.merge!(@b_id)
+      assert_equal @c1b.article, @a
+      assert_equal @c2b.article, @a
     end
 
     it "should raise error if B does not exist" do
+      fake_id = 98
+      assert_nil Article.find_by_id(fake_id)
+      assert_raise ArgumentError do
+        @a.merge!(fake_id)
+      end
     end
 
     it "should raise error if B is A" do
+      assert_raise ArgumentError do
+        @a.merge!(@a_id)
+      end
     end
 
   end
