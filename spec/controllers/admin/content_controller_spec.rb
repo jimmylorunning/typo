@@ -729,7 +729,7 @@ describe Admin::ContentController do
         Article.stub(:find).with('1').and_return(@article_a)
         @article_a.stub(:merge!).and_return(@article_a)
         post :merge, 'id' => '1', 'merge' => {:with => '2'}
-        response.should redirect_to(:action => 'new', :id => 1)
+        response.should redirect_to(:action => 'edit', :id => 1)
       end
     end
   end
