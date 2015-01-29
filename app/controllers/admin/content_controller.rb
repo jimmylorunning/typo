@@ -3,6 +3,7 @@ require 'base64'
 module Admin; end
 class Admin::ContentController < Admin::BaseController
   layout "administration", :except => [:show, :autosave]
+  before_filter :confirm_merge_rights, :only => :merge
 
   cache_sweeper :blog_sweeper
 
@@ -38,12 +39,7 @@ class Admin::ContentController < Admin::BaseController
   end
 
   def merge
-    if !current_user.admin?
-      flash[:error] = _("Error, you are not allowed to perform this action")
-      redirect_to(:action => 'edit', :id => params[:id]) and return
-    end
-    @article = Article.find(params[:id])
-    raise ArgumentError, 'Article id not found for merge' if @article.nil?
+    @article = get_merge_article
     begin
       @article.merge!(params[:merge_with])
     rescue ActiveRecord::RecordNotFound, ArgumentError => e
@@ -255,4 +251,20 @@ class Admin::ContentController < Admin::BaseController
   def setup_resources
     @resources = Resource.by_created_at
   end
+
+  private
+
+  def confirm_merge_rights
+    if !current_user.admin?
+      flash[:error] = _("Error, you are not allowed to perform this action")
+      redirect_to(:action => 'edit', :id => params[:id]) and return
+    end
+  end
+
+  def get_merge_article
+    article = Article.find(params[:id])
+    raise ArgumentError, 'Article id not found for merge' if article.nil?
+    article
+  end
+
 end

@@ -684,7 +684,7 @@ describe Admin::ContentController do
         request.session = {:user => @user.id}
       end
 
-      it "redirects to the new action" do
+      it "redirects to the article edit page" do
         article = double('article')
         Article.stub(:find).and_return(article)
         post :merge, 'id' => '1', 'merge_with' => '3' 
