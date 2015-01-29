@@ -681,15 +681,15 @@ describe Admin::ContentController do
       before do
         Factory(:blog)
         @user = Factory(:user, :text_filter => Factory(:markdown), :profile => Factory(:profile_publisher))
-        @article = Factory(:article)
         request.session = {:user => @user.id}
       end
 
       it "redirects to the new action" do
-        article_id = @article.id
-        post :merge, 'id' => article_id, 'merge'  => {:with => '3'} 
+        article = double('article')
+        Article.stub(:find).and_return(article)
+        post :merge, 'id' => '1', 'merge'  => {:with => '3'} 
         flash.should_not be_nil
-        response.should redirect_to(:action => 'new', :id =>  article_id)
+        response.should redirect_to(:action => 'new', :id => 1)
       end
     end
 
@@ -707,13 +707,28 @@ describe Admin::ContentController do
         request.session = {:user => @user.id}
       end
 
+      it "should find article with the id" do
+        Article.should_receive(:find).with('1')
+        post :merge, 'id' => '1', 'merge' => {:with => '2'}
+      end
+
       it "should raise error if article A does not exist" do
+        fake_id = 52
+        Article.stub(:find).and_return(nil)
+        expect{post :merge, 'id' => fake_id, 'merge' => {:with => '2'}}.to raise_error(ArgumentError)
       end
 
       it "should ask article A to merge with other article B" do
+        Article.stub(:find).with('1').and_return(@article_a)
+        @article_a.should_receive(:merge!).with('2')
+        post :merge, 'id' => '1', 'merge' => {:with => '2'}
       end
 
       it "should redirect to newly merged article" do
+        Article.stub(:find).with('1').and_return(@article_a)
+        @article_a.stub(:merge!).and_return(@article_a)
+        post :merge, 'id' => '1', 'merge' => {:with => '2'}
+        response.should redirect_to(:action => 'new', :id => 1)
       end
     end
   end
