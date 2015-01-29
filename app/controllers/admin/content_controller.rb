@@ -40,7 +40,7 @@ class Admin::ContentController < Admin::BaseController
   def merge
     if !current_user.admin?
       flash[:error] = _("Error, you are not allowed to perform this action")
-      redirect_to(:action => 'new', :id => params[:id]) and return
+      redirect_to(:action => 'edit', :id => params[:id]) and return
     end
     @article = Article.find(params[:id])
     raise ArgumentError, 'Article id not found for merge' if @article.nil?

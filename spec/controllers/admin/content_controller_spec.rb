@@ -689,7 +689,7 @@ describe Admin::ContentController do
         Article.stub(:find).and_return(article)
         post :merge, 'id' => '1', 'merge'  => {:with => '3'} 
         flash.should_not be_nil
-        response.should redirect_to(:action => 'new', :id => 1)
+        response.should redirect_to(:action => 'edit', :id => 1)
       end
     end
 
