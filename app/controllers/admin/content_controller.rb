@@ -37,7 +37,7 @@ class Admin::ContentController < Admin::BaseController
     new_or_edit
   end
 
-  def merge(other_id)
+  def merge
     if !current_user.admin?
       flash[:error] = _("Error, you are not allowed to perform this action")
       redirect_to(:action => 'new', :id => params[:id]) and return
