@@ -33,8 +33,12 @@ end
 
 Then(/^I should see a helpful error message$/) do
   if page.respond_to? :should
-    page.should have_css('.flashnotice')
+    page.should have_css('.alert-message.error')
   else
-    assert page.has_css?('.flashnotice')
+    assert page.has_css?('.alert-message.error')
   end
+end
+
+Given(/^I am debugging$/) do
+  debugger
 end
