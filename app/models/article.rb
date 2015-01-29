@@ -72,10 +72,23 @@ class Article < Content
   end
 
   def merge!(other_id)
-    merge(other_id)
+    raise ArgumentError, 'Cannot merge article with itself' if other_id == self.id
+    other = Article.find(other_id)
+    raise ArgumentError, 'Article not found for merge' if other.nil?
+    self.body = self.body + ' ' + other.body
+    merge_comments(other_id)
+    other.destroy
+    self.save
   end
 
-  def merge(other_id)
+  # move to private when done
+  def merge_comments(other_id)
+    comments = Comment.where(:article_id => other_id)
+    comments.each do |comment|
+      comment.article_id = self.id
+      comment.article = self
+      comment.save
+    end
   end
 
   def set_permalink

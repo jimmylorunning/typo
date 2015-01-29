@@ -709,6 +709,7 @@ describe Admin::ContentController do
 
       it "should find article with the id" do
         Article.should_receive(:find).with('1').and_return(@article_a)
+        @article_a.stub(:merge!)
         post :merge, 'id' => '1', 'merge' => {:with => '2'}
       end
 

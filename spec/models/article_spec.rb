@@ -132,14 +132,16 @@ describe Article do
     
     it "should import B's comments to A" do
       @a.merge!(@b_id)
-      assert_equal @c1b.article, @a
-      assert_equal @c2b.article, @a
+      c1b_id = @c1b.id
+      c2b_id = @c2b.id
+      assert_equal @a, Comment.find(c1b_id).article
+      assert_equal @a, Comment.find(c2b_id).article
     end
 
     it "should raise error if B does not exist" do
       fake_id = 98
       assert_nil Article.find_by_id(fake_id)
-      assert_raise ArgumentError do
+      assert_raise ActiveRecord::RecordNotFound do
         @a.merge!(fake_id)
       end
     end
